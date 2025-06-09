@@ -1,14 +1,12 @@
-import boto3
-import json
+import boto3, json
 
 def lambda_handler(event, context):
-    s3 = boto3.client('s3')
-    body = json.loads(event['body'])
-    bucket = body['bucket']
-    directorio = body['directorio']
+    body = event['body']
+    if isinstance(body, str): body = json.loads(body)
 
     try:
-        s3.put_object(Bucket=bucket, Key=(directorio.strip('/') + '/'))
-        return {'statusCode': 200, 'body': f'Directorio {directorio}/ creado en bucket {bucket}'}
+        boto3.client('s3').put_object(Bucket=body['bucket'], Key=body['directorio'].strip('/') + '/')
+        return {'statusCode': 200, 'body': f"Directorio '{body['directorio']}/' creado"}
     except Exception as e:
         return {'statusCode': 500, 'body': str(e)}
+}
