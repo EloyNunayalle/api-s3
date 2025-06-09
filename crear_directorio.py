@@ -9,4 +9,3 @@ def lambda_handler(event, context):
         return {'statusCode': 200, 'body': f"Directorio '{body['directorio']}/' creado"}
     except Exception as e:
         return {'statusCode': 500, 'body': str(e)}
-}
