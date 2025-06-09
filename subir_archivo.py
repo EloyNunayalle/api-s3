@@ -1,17 +1,12 @@
-import boto3
-import base64
-import json
+import boto3, base64, json
 
 def lambda_handler(event, context):
-    s3 = boto3.client('s3')
-    body = json.loads(event['body'])
-    bucket = body['bucket']
-    key = body['key']
-    contenido_base64 = body['contenido_base64']
+    body = event['body']
+    if isinstance(body, str): body = json.loads(body)
 
     try:
-        contenido = base64.b64decode(contenido_base64)
-        s3.put_object(Bucket=bucket, Key=key, Body=contenido)
-        return {'statusCode': 200, 'body': f'Se subió {key} en el bucket {bucket}'}
+        data = base64.b64decode(body['contenido_base64'])
+        boto3.client('s3').put_object(Bucket=body['bucket'], Key=body['key'], Body=data)
+        return {'statusCode': 200, 'body': f"Archivo '{body['key']}' subido"}
     except Exception as e:
         return {'statusCode': 500, 'body': str(e)}
