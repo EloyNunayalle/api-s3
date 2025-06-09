@@ -1,13 +1,11 @@
-import boto3
-import json
+import boto3, json
 
 def lambda_handler(event, context):
-    s3 = boto3.client('s3')
-    body = json.loads(event['body'])
-    nombre = body['nombre']
+    body = event['body']
+    if isinstance(body, str): body = json.loads(body)
 
     try:
-        s3.create_bucket(Bucket=nombre)
-        return {'statusCode': 200, 'body': f'Se creó el bucket: {nombre}'}
+        boto3.client('s3').create_bucket(Bucket=body['nombre'])
+        return {'statusCode': 200, 'body': f"Bucket '{body['nombre']}' creado"}
     except Exception as e:
         return {'statusCode': 500, 'body': str(e)}
